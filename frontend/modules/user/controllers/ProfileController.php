@@ -2,6 +2,7 @@
 
 namespace frontend\modules\user\controllers;
 
+use frontend\models\User;
 use yii\web\Controller;
 
 
@@ -16,6 +17,9 @@ class ProfileController extends Controller
 {
     public function actionView($id) 
     {
-        return $this->render('view');
+        $user = User::findIdentity($id);
+        return $this->render('view', [
+            'user' => $user,
+        ]);
     }
 }
