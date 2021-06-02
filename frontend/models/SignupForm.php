@@ -3,7 +3,7 @@ namespace frontend\models;
 
 use Yii;
 use yii\base\Model;
-use common\models\User;
+use frontend\models\User;
 
 /**
  * Signup form
@@ -11,8 +11,11 @@ use common\models\User;
 class SignupForm extends Model
 {
     public $username;
+    public $name;
+    public $surname;
     public $email;
     public $password;
+    public $password_confirm;
 
 
     /**
@@ -23,17 +26,28 @@ class SignupForm extends Model
         return [
             ['username', 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'unique', 'targetClass' => '\frontend\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
+
+            ['name', 'trim'],
+            ['name', 'required'],
+            ['name', 'string', 'min' => 2, 'max' => 255],
+
+            ['surname', 'trim'],
+            ['surname', 'required'],
+            ['surname', 'string', 'min' => 2, 'max' => 255],
 
             ['email', 'trim'],
             ['email', 'required'],
             ['email', 'email'],
             ['email', 'string', 'max' => 255],
-            ['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+            ['email', 'unique', 'targetClass' => '\frontend\models\User', 'message' => 'This email address has already been taken.'],
 
             ['password', 'required'],
             ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+
+            ['password_confirm', 'compare', 'compareAttribute' =>'password',  'message' => 'Пароли должны совпадать.'],
+
         ];
     }
 
@@ -47,14 +61,15 @@ class SignupForm extends Model
         if (!$this->validate()) {
             return null;
         }
-        
+
         $user = new User();
         $user->username = $this->username;
+        $user->name = $this->name;
+        $user->surname = $this->surname;
         $user->email = $this->email;
         $user->setPassword($this->password);
         $user->generateAuthKey();
-        $user->generateEmailVerificationToken();
-        return $user->save() && $this->sendEmail($user);
+        return $user->save() ? $user : null;
 
     }
 
@@ -75,5 +90,16 @@ class SignupForm extends Model
             ->setTo($this->email)
             ->setSubject('Account registration at ' . Yii::$app->name)
             ->send();
+    }
+    public function attributeLabels()
+    {
+        return [
+            'username' => 'Логин',
+            'name' => 'Имя',
+            'surname' => 'Фамилия',
+            'email' => 'E-mail',
+            'password' => 'Пароль',
+            'password_confirm' => 'Подтверждение пароля',
+        ];
     }
 }
