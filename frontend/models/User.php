@@ -1,10 +1,12 @@
 <?php
+
 namespace frontend\models;
 
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\IdentityInterface;
 
 /**
@@ -16,7 +18,9 @@ use yii\web\IdentityInterface;
  * @property string $password_reset_token
  * @property string $verification_token
  * @property string $email
- * @property string $auth_key
+ * @property string $name
+ * @property string $surname
+ * @property string $avatar
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
@@ -109,7 +113,8 @@ class User extends ActiveRecord implements IdentityInterface
      * @param string $token verify email token
      * @return static|null
      */
-    public static function findByVerificationToken($token) {
+    public static function findByVerificationToken($token)
+    {
         return static::findOne([
             'verification_token' => $token,
             'status' => self::STATUS_INACTIVE
@@ -208,5 +213,128 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function sendFriendRequest($id)
+    {
+        $friend = new Friend();
+        $friend->user = $this->id;
+        $friend->friend = $id;
+        $friend->status = 0;
+        $friend->save();
+    }
+    public function cancelFriendRequest($id)
+    {
+        $friend = Friend::find()->where(['user' => $this->id, 'friend' => $id,])->one();
+        $friend->delete();
+    }
+    public function rejectFriend($id)
+    {
+        $friend = Friend::find()->where(['user' => $id, 'friend' => $this->id,])->one();
+        $friend->delete();
+    }
+
+    public function confirmfriend($id)
+    {
+        $friend = Friend::find()->where(['user' => $id, 'friend' => $this->id,])->one();
+        $friend->status = 1;
+        $friend->save();
+
+        $friend = new Friend();
+        $friend->user = $this->id;
+        $friend->friend = $id;
+        $friend->status = 1;
+        $friend->save();
+    }
+
+    public function deleteFriend($id)
+    {
+        $friend = Friend::find()->where(['user' => $this->id, 'friend' => $id,])->one();
+        $friend->delete();
+
+        $friend = Friend::find()->where(['user' => $id, 'friend' => $this->id,])->one();
+        $friend->delete();
+
+    }
+
+
+    public function friendOf($id)
+    {
+        $query = new Query();
+        $query->select('*')
+            ->from('friend')
+            ->where([
+                'user' => $this->id,
+                'friend' => $id,
+                'status' => 1,
+            ])
+            ->orWhere([
+                'friend' => $this->id,
+                'user' => $id,
+                'status' => 1,
+            ])
+            ->all();
+        $command = $query->createCommand();
+        $result = $command->queryAll();
+
+        return sizeof($result) == 2 && $this->id != Yii::$app->user->identity->id;
+    }
+
+    public function notFriendOf($id)
+    {
+        $query = new Query();
+        $query->select('*')
+            ->from('friend')
+            ->where([
+                'user' => $this->id,
+                'friend' => $id,
+            ])
+            ->orWhere([
+                'friend' => $this->id,
+                'user' => $id,
+            ])
+            ->all();
+        $command = $query->createCommand();
+        $result = $command->queryAll();
+
+        return sizeof($result) == 0 && $this->id != Yii::$app->user->identity->id;
+    }
+
+
+
+    public function sendedRequest($id)
+    {
+        $query = new Query();
+        $query->select('*')
+            ->from('friend')
+            ->where([
+                'user' => $id,
+                'friend' => $this->id,
+                'status' => 0,
+            ])
+            ->all();
+        $command = $query->createCommand();
+        $result = $command->queryAll();
+
+        return sizeof($result) == 1 && $this->id != Yii::$app->user->identity->id;
+    }
+
+    public function hasRequest($id)
+    {
+        $query = new Query();
+        $query->select('*')
+            ->from('friend')
+            ->where([
+                'user' => $this->id,
+                'friend' => $id,
+                'status' => 0,
+            ])
+            ->all();
+        $command = $query->createCommand();
+        $result = $command->queryAll();
+
+        return sizeof($result) == 1 && $this->id != Yii::$app->user->identity->id;
     }
 }
