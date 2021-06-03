@@ -217,6 +217,8 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * {@inheritdoc}
      */
+
+    #region friends_logic
     public function sendFriendRequest($id)
     {
         $friend = new Friend();
@@ -337,4 +339,5 @@ class User extends ActiveRecord implements IdentityInterface
 
         return sizeof($result) == 1 && $this->id != Yii::$app->user->identity->id;
     }
+    #endregion
 }
