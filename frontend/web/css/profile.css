@@ -8,9 +8,10 @@
     width: 250px;
     min-height: 250px;
     background-color: #eee;
+    border-radius: 10px;
 }
 
-.friend-controls {
+.controls {
     width: 100%;
     margin-top: 20px;
     display: flex;
@@ -18,7 +19,8 @@
     align-items: center;
 }
 
-.friend-controls .btn {
+.controls .btn {
     width: 70%;
-    margin: 5px;
+    margin-bottom: 5px;
+    margin-top: 5px;
 }

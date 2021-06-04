@@ -1,6 +1,9 @@
 <?
 
+use yii\bootstrap\Modal;
+use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\widgets\ActiveForm;
 
 $currentUser =  Yii::$app->user->identity;
 ?>
@@ -12,10 +15,25 @@ $currentUser =  Yii::$app->user->identity;
             <div class="profile-wrapper">
                 <h3><?= $user->name ?> <?= $user->surname ?></h3>
                 <img src="<? echo Url::to(['../images\/']) . $user->avatar; ?>" alt="" class="avatar">
-                <? if($currentUser->id==$user->id): ?>
-                    <button class="btn btn-info"> Изменить аватар</button></a>
-                <? endif; ?>
-                <div class="friend-controls">
+                <div class="controls">
+                    <? if ($currentUser->id == $user->id) :
+                        Modal::begin([
+                            'header' => '<h3>Изменение Аватара</h3>',
+                            'toggleButton' =>  [
+                                'label' => 'Изменить аватар',
+                                'tag' => 'button',
+                                'class' => 'btn btn-success',
+                            ],
+                        ]);
+                        $changeAvatarform = ActiveForm::begin(['id' => 'change-avatar-form', 'options' => ['enctype' => 'multipart/form-data']]);
+                        echo $changeAvatarform->field($changeAvatar, 'avatar')->fileInput();
+                        echo '<div class="form-group">';
+                        echo Html::submitButton('Изменить аватар', ['class' => 'btn btn-primary', 'name' => 'change-avatar-button']);
+                        echo '</div>';
+                        ActiveForm::end();
+                        Modal::end();
+                    endif; ?>
+
                     <?php
                     if ($user->sendedRequest($currentUser->id)) {
                         echo '<a href="';
