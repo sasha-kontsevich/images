@@ -12,7 +12,9 @@ $currentUser =  Yii::$app->user->identity;
             <div class="profile-wrapper">
                 <h3><?= $user->name ?> <?= $user->surname ?></h3>
                 <img src="<? echo Url::to(['../images\/']) . $user->avatar; ?>" alt="" class="avatar">
-
+                <? if($currentUser->id==$user->id): ?>
+                    <button class="btn btn-info"> Изменить аватар</button></a>
+                <? endif; ?>
                 <div class="friend-controls">
                     <?php
                     if ($user->sendedRequest($currentUser->id)) {
