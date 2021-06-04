@@ -1,0 +1,24 @@
+.friend-item {
+    box-shadow: 0px 0px 4px 1px #aaa;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+.friend-item:hover {
+    transform: translate(-10px, 0);
+    transition: 0.1s;
+}
+
+.friend-avatar {
+    height: 36px;
+    width: 36px;
+    background-position: center;
+    background-size: cover;
+    margin: 5px;
+}
+
+.friend-name {
+    margin-left: 10px;
+}

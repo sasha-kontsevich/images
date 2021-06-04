@@ -39,7 +39,7 @@ AppAsset::register($this);
         $menuItems[] = ['label' => 'Регистрация', 'url' => ['/user/default/signup']];
         $menuItems[] = ['label' => 'Авторизация', 'url' => ['/user/default/login']];
     } else {
-        $menuItems[] = ['label' => 'Друзья', 'url' => ['/friend/index']];
+        $menuItems[] = ['label' => 'Друзья', 'url' => ['/friend/default/index']];
         $menuItems[] = ['label' => 'Сообщения', 'url' => ['/messages/index']];
         $menuItems[] = ['label' => 'Страница', 'url' => ['/page/index']];
         $menuItems[] = '<li>'

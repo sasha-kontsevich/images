@@ -15,6 +15,10 @@ return [
         'user' => [
             'class' => 'frontend\modules\user\Module',
         ],
+        'friend' => [
+            'class' => 'frontend\modules\friend\Module',
+        ],
+
     ],
     'components' => [
         'request' => [
